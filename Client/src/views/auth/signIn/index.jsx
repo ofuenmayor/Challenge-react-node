@@ -32,6 +32,7 @@ import Spinner from "components/spinner/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchImage } from "../../../redux/slices/imageSlice";
 import { setUser } from "../../../redux/slices/localSlice";
+import { use } from "react";
 
 function SignIn() {
   // Chakra color mode
@@ -68,13 +69,13 @@ function SignIn() {
   } = useFormik({
     initialValues: initialValues,
     validationSchema: loginSchema,
-    onSubmit: (values, { resetForm }) => {
-      login();
+    onSubmit: async (values, { resetForm }) => {
+      await login(values, true);
     },
   });
   const navigate = useNavigate();
 
-  const login = async () => {
+  const login = async (values, checkBox) => {
     try {
       setIsLoding(true);
       let response = await postApi("api/user/login", values, checkBox);
@@ -82,7 +83,7 @@ function SignIn() {
         navigate("/superAdmin");
         toast.success("Login Successfully!");
         resetForm();
-        dispatch(setUser(response?.data?.user))
+        dispatch(setUser(response?.data?.user));
       } else {
         toast.error(response.response.data?.error);
       }
